@@ -51,7 +51,7 @@ const createCard = ({ label, img, name, description, price}) => {
 	card.className = 'col-lg-3 col-sm-6';
 	card.innerHTML = (`
 		<div class="goods-card">
-		${label ? `<span class="label">${label}</span>` : ''}
+			${label ? `<span class="label">${label}</span>` : ''}
 			<img src=${'db/' + img} alt="image: Hoodie" class="goods-image">
 			<h3 class="goods-title">${name}</h3>
 			<p class="goods-description">${description}</p>
@@ -91,20 +91,20 @@ navigationLink.forEach(link => {
 	})
 });
 
-showAcsesories.forEach(item => item.addEventListener('click', event => {
-	event.preventDefault();
-	filterCards('category', 'Accessories');
+const smoothScroll = () => {
 	document.body.scrollIntoView({
 		behavior: "smooth",
 		block: "start"
 	});
+};
+showAcsesories.forEach(item => item.addEventListener('click', event => {
+	event.preventDefault();
+	filterCards('category', 'Accessories');
+	smoothScroll();
 }));
 
 showClothing.forEach(item => item.addEventListener('click', event => {
 	event.preventDefault();
 	filterCards('category', 'Clothing');
-	document.body.scrollIntoView({
-		behavior: "smooth",
-		block: "start"
-	});
+	smoothScroll();
 }));
