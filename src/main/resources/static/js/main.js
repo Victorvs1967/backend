@@ -24,7 +24,8 @@ modalCart.addEventListener('click', event => {
 // scroll smooth
 {
 	const scrollLinks = document.querySelectorAll('a.scroll-link');
-	for (let scrollLink of scrollLinks) scrollLink.addEventListener('click', event => {
+
+	for (const scrollLink of scrollLinks) scrollLink.addEventListener('click', event => {
 		event.preventDefault();
 		const id = scrollLink.getAttribute('href');
 		document.querySelector(id).scrollIntoView({
@@ -67,4 +68,12 @@ const renderCards = data => {
 	document.body.classList.add('show-goods');
 };
 
-getGoods().then(renderCards);
+more.addEventListener('click', event => {
+	event.preventDefault();
+	getGoods().then(renderCards);
+	
+	document.body.scrollIntoView({
+		behavior: "smooth",
+		block: "start"
+	});
+});
