@@ -33,3 +33,38 @@ modalCart.addEventListener('click', event => {
 		});
 	})
 }
+
+// goods
+
+const more = document.querySelector('.more'),
+	navigationItem = document.querySelectorAll('.navigation-item'),
+	longGoodsList = document.querySelector('.long-goods-list');
+
+const getGoods = () => fetch('db/db.json')
+				.then(response => response.json());
+	
+const createCard = objCard => {
+	const card = document.createElement('div');
+	card.className = 'col-lg-3 col-sm-6';
+	card.innerHTML = (`
+		<div class="goods-card">
+			<span class="label">${objCard.label}</span>
+			<img src=${'db/' + objCard.img} alt="image: Hoodie" class="goods-image">
+			<h3 class="goods-title">${objCard.name}</h3>
+			<p class="goods-description">${objCard.description}</p>
+			<button class="button goods-card-btn add-to-cart" data-id="007">
+				<span class="button-price">$${objCard.price}</span>
+			</button>
+		</div>
+	`);
+	
+	return card;
+};
+
+const renderCards = data => {
+	longGoodsList.textContent = '';
+	longGoodsList.append(...data.map(createCard));
+	document.body.classList.add('show-goods');
+};
+
+getGoods().then(renderCards);
