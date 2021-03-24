@@ -48,7 +48,7 @@ const createCard = objCard => {
 	card.className = 'col-lg-3 col-sm-6';
 	card.innerHTML = (`
 		<div class="goods-card">
-			<span class="label">${objCard.label}</span>
+		${objCard.label ? `<span class="label">${objCard.label}</span>` : ''}
 			<img src=${'db/' + objCard.img} alt="image: Hoodie" class="goods-image">
 			<h3 class="goods-title">${objCard.name}</h3>
 			<p class="goods-description">${objCard.description}</p>
