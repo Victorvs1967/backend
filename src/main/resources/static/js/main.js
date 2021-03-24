@@ -1,6 +1,5 @@
 const mySwiper = new Swiper('.swiper-container', {
 	loop: true,
-
 	// Navigation arrows
 	navigation: {
 		nextEl: '.slider-button-next',
@@ -36,10 +35,12 @@ modalCart.addEventListener('click', event => {
 }
 
 // goods
-
 const more = document.querySelector('.more'),
 	navigationLink = document.querySelectorAll('.navigation-link'),
-	longGoodsList = document.querySelector('.long-goods-list');
+	longGoodsList = document.querySelector('.long-goods-list'),
+	showAcsesories = document.querySelectorAll('.show-acsessories'),
+	showClothing = document.querySelectorAll('.show-clothing');
+
 
 const getGoods = () => fetch('db/db.json')
 				.then(response => response.json());
@@ -67,10 +68,6 @@ const renderCards = data => {
 	longGoodsList.textContent = '';
 	longGoodsList.append(...data.map(createCard));
 	document.body.classList.add('show-goods');
-	document.body.scrollIntoView({
-		behavior: "smooth",
-		block: "start"
-	});
 };
 
 more.addEventListener('click', event => {
@@ -80,10 +77,7 @@ more.addEventListener('click', event => {
 
 const filterCards = (field, value) => {
 	field ? getGoods()
-			.then(data => {
-				const filteredGoods = data.filter(good => good[field] === value);
-				return filteredGoods;
-			})
+			.then(data => data.filter(good => good[field] === value))
 			.then(renderCards) :
 			getGoods().then(renderCards);
 };
@@ -96,3 +90,21 @@ navigationLink.forEach(link => {
 		filterCards(field, value);
 	})
 });
+
+showAcsesories.forEach(item => item.addEventListener('click', event => {
+	event.preventDefault();
+	filterCards('category', 'Accessories');
+	document.body.scrollIntoView({
+		behavior: "smooth",
+		block: "start"
+	});
+}));
+
+showClothing.forEach(item => item.addEventListener('click', event => {
+	event.preventDefault();
+	filterCards('category', 'Clothing');
+	document.body.scrollIntoView({
+		behavior: "smooth",
+		block: "start"
+	});
+}));
