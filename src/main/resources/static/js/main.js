@@ -10,18 +10,16 @@ const mySwiper = new Swiper('.swiper-container', {
 
 //  cart
 const buttonCart = document.querySelector('.button-cart'),
-	modalCart = document.querySelector('#modal-cart'),
-	modalClose = document.querySelector('.modal-close');
+	modalCart = document.querySelector('#modal-cart');
 
 const openModal = () => modalCart.classList.add('show');
 const closeModal = () => modalCart.classList.remove('show')
 
 buttonCart.addEventListener('click', openModal);
-modalClose.addEventListener('click', closeModal);
 
-document.body.addEventListener('click', event => {
-	if (event.target.closest('#modal-cart')) closeModal();
-})
+modalCart.addEventListener('click', event => {
+	if (event.target.classList.contains('overlay') || event.target.classList.contains('modal-close')) closeModal();
+});
 
 // scroll smooth
 {
