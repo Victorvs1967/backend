@@ -38,23 +38,24 @@ modalCart.addEventListener('click', event => {
 // goods
 
 const more = document.querySelector('.more'),
-	navigationItem = document.querySelectorAll('.navigation-item'),
+	navigationLink = document.querySelectorAll('.navigation-link'),
 	longGoodsList = document.querySelector('.long-goods-list');
 
 const getGoods = () => fetch('db/db.json')
 				.then(response => response.json());
 	
-const createCard = objCard => {
+const createCard = ({ label, img, name, description, price}) => {
+
 	const card = document.createElement('div');
 	card.className = 'col-lg-3 col-sm-6';
 	card.innerHTML = (`
 		<div class="goods-card">
-		${objCard.label ? `<span class="label">${objCard.label}</span>` : ''}
-			<img src=${'db/' + objCard.img} alt="image: Hoodie" class="goods-image">
-			<h3 class="goods-title">${objCard.name}</h3>
-			<p class="goods-description">${objCard.description}</p>
+		${label ? `<span class="label">${label}</span>` : ''}
+			<img src=${'db/' + img} alt="image: Hoodie" class="goods-image">
+			<h3 class="goods-title">${name}</h3>
+			<p class="goods-description">${description}</p>
 			<button class="button goods-card-btn add-to-cart" data-id="007">
-				<span class="button-price">$${objCard.price}</span>
+				<span class="button-price">$${price}</span>
 			</button>
 		</div>
 	`);
@@ -66,14 +67,32 @@ const renderCards = data => {
 	longGoodsList.textContent = '';
 	longGoodsList.append(...data.map(createCard));
 	document.body.classList.add('show-goods');
+	document.body.scrollIntoView({
+		behavior: "smooth",
+		block: "start"
+	});
 };
 
 more.addEventListener('click', event => {
 	event.preventDefault();
 	getGoods().then(renderCards);
-	
-	document.body.scrollIntoView({
-		behavior: "smooth",
-		block: "start"
-	});
+});
+
+const filterCards = (field, value) => {
+	field ? getGoods()
+			.then(data => {
+				const filteredGoods = data.filter(good => good[field] === value);
+				return filteredGoods;
+			})
+			.then(renderCards) :
+			getGoods().then(renderCards);
+};
+
+navigationLink.forEach(link => {
+	link.addEventListener('click', event => {
+		event.preventDefault();
+		const field = link.dataset.field;
+		const value = link.textContent;
+		filterCards(field, value);
+	})
 });
