@@ -68,8 +68,10 @@ const cart = {
 		const goodItem = this.cartGoods.find(item => item.id === id);
 		goodItem ? this.plusGood(id) : getGoods()
 										.then(data => data.find(item => item.id === id))
-										.then(({ id, name, price }) => this.cartGoods.push({ id, name, price, count: 1 }));
-		this.quantity();
+										.then(({ id, name, price }) => {
+											this.cartGoods.push({ id, name, price, count: 1 });
+											this.quantity();										
+										})
 	},
 	deleteGood(id) {
 		this.cartGoods = this.cartGoods.filter(item => id !== item.id);
