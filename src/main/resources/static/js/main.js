@@ -71,7 +71,7 @@ const cart = {
 										.then(({ id, name, price }) => {
 											this.cartGoods.push({ id, name, price, count: 1 });
 											this.quantity();										
-										})
+										});
 	},
 	deleteGood(id) {
 		this.cartGoods = this.cartGoods.filter(item => id !== item.id);
