@@ -18,5 +18,13 @@ public class Goods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     private String name;
+    private String img;
+    private String label;
+    private String description;
+    private double price;
+
+    private String category;
+    private String gender;
 }

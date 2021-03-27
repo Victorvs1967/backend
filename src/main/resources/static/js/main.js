@@ -38,7 +38,8 @@ modalCart.addEventListener('click', event => {
 const cart = {
 	cartGoods: [],
 	quantity() {
-		cartCount.textContent = this.cartGoods.reduce((sum, item) => sum + item.count, 0);
+		const count = this.cartGoods.reduce((sum, item) => sum + item.count, 0);
+		cartCount.textContent = count ? count : '';
 	},
 	renderCart() {
 		cartTableGoods.textContent = '';
