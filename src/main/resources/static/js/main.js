@@ -1,24 +1,20 @@
-const mySwiper = new Swiper('.swiper-container', {
-	loop: true,
-	// Navigation arrows
-	navigation: {
-		nextEl: '.slider-button-next',
-		prevEl: '.slider-button-prev',
-	},
-});
+import './module/smoothscroll.min.js';
+import './module/mySwiper.js';
+import smootnScroll from './module/smoothScroll.js';
 
+// init variables
 const buttonCart = document.querySelector('.button-cart'),
 	modalCart = document.querySelector('#modal-cart'),
 	more = document.querySelector('.more'),
 	navigationLink = document.querySelectorAll('.navigation-link'),
 	longGoodsList = document.querySelector('.long-goods-list'),
 	showAcsesories = document.querySelectorAll('.show-acsessories'),
-	scrollLinks = document.querySelectorAll('a.scroll-link'),
 	showClothing = document.querySelectorAll('.show-clothing'),
 	cartTableGoods = document.querySelector('.cart-table__goods'),
 	cartTableTotal = document.querySelector('.card-table__total'),
 	cartCount = document.querySelector('.cart-count'),
-	cartClear = document.querySelector('.cart-clear');
+	cartClear = document.querySelector('.cart-clear'),
+	modalForm = document.querySelector('.modal-form');
 
 //  cart
 const openModal = () => {
@@ -26,8 +22,13 @@ const openModal = () => {
 	modalCart.classList.add('show');
 };
 const closeModal = () => modalCart.classList.remove('show')
-const getGoods = () => fetch('db/db.json')
-				.then(response => response.json());
+
+const checkGoods = () => {
+	const data = [];
+	return () => data.length ? data : data.push(...fetch('db/db.json').then(response => response.json()));
+}
+
+const getGoods = () => fetch('db/db.json').then(response => response.json()); 
 
 buttonCart.addEventListener('click', openModal);
 modalCart.addEventListener('click', event => {
@@ -36,6 +37,9 @@ modalCart.addEventListener('click', event => {
 
 const cart = {
 	cartGoods: [],
+	quantity() {
+		cartCount.textContent = this.cartGoods.reduce((sum, item) => sum + item.count, 0);
+	},
 	renderCart() {
 		cartTableGoods.textContent = '';
 		this.cartGoods.forEach(({ id, name, price, count }) => {
@@ -58,28 +62,26 @@ const cart = {
 			return sum + item.price * item.count;
 		}, 0);
 
-		const totalCount = this.cartGoods.reduce((sum, item) => {
-			return sum + item.count;
-		}, 0);
-
 		cartTableTotal.textContent = totalPrice;
-		cartCount.textContent = totalCount;
 	},
 	addCartGoods(id) {
 		const goodItem = this.cartGoods.find(item => item.id === id);
 		goodItem ? this.plusGood(id) : getGoods()
 										.then(data => data.find(item => item.id === id))
 										.then(({ id, name, price }) => this.cartGoods.push({ id, name, price, count: 1 }));
+		this.quantity();
 	},
 	deleteGood(id) {
 		this.cartGoods = this.cartGoods.filter(item => id !== item.id);
 		this.renderCart();
+		this.quantity();
 	},
 	minusGood(id) {
 		for (const item of this.cartGoods) {
 			if (item.id === id) item.count > 1 ? item.count -= 1 : this.deleteGood(id);
 		}
 		this.renderCart();
+		this.quantity();
 	},
 	plusGood(id) {
 		for (const item of this.cartGoods) {
@@ -89,10 +91,12 @@ const cart = {
 			}
 		}
 		this.renderCart();
+		this.quantity();
 	},
 	clearCart() {
-		this.cartGoods = [];
+		this.cartGoods.length = 0;
 		this.renderCart();
+		this.quantity();
 	},
 }
 
@@ -118,19 +122,7 @@ cartClear.addEventListener('click', event => {
 })
 
 // scroll smooth
-const smoothScroll = () => {
-	document.body.scrollIntoView({
-		behavior: "smooth",
-		block: "start"
-	});
-};
-
-{
-	for (const scrollLink of scrollLinks) scrollLink.addEventListener('click', event => {
-		event.preventDefault();
-		smoothScroll();
-	})
-}
+smootnScroll();
 
 // goods
 const createCard = ({ id, label, img, name, description, price}) => {
@@ -170,14 +162,12 @@ more.addEventListener('click', event => {
 	getGoods().then(renderCards);
 });
 
-navigationLink.forEach(link => {
-	link.addEventListener('click', event => {
+navigationLink.forEach(link => link.addEventListener('click', event => {
 		event.preventDefault();
 		const field = link.dataset.field;
 		const value = link.textContent;
 		filterCards(field, value);
-	})
-});
+}));
 
 showAcsesories.forEach(item => item.addEventListener('click', event => {
 	event.preventDefault();
@@ -190,3 +180,28 @@ showClothing.forEach(item => item.addEventListener('click', event => {
 	filterCards('category', 'Clothing');
 	smoothScroll();
 }));
+
+// send data to server
+const postData = dataUser => fetch('/buy', {
+	method: 'POST',
+	body: dataUser,
+});
+
+modalForm.addEventListener('submit', event => {
+	event.preventDefault();
+	const formData = new FormData(modalForm);
+	formData.append('goods', JSON.stringify(cart.cartGoods));
+	postData(formData)
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(response.status)
+		}
+		alert('Your goods sent!');
+	})
+	.catch(error => alert('Error: ' + error))
+	.finally(() => {
+		closeModal();
+		modalForm.reset();
+		cart.clearCart();
+	});
+})
