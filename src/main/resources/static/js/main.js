@@ -23,9 +23,9 @@ const openModal = () => {
 };
 const closeModal = () => modalCart.classList.remove('show')
 
-const checkGoods = async () => {
+const checkGoods = () => {
 	const data = [];
-	return () => await (data.length ? data : data.push(...fetch('db/db.json').then(response => response.json())));
+	return () => (data.length ? data : data.push(...fetch('./db/db.json').then(response => response.json())));
 }
 
 // const getGoods = checkGoods; 
@@ -37,7 +37,10 @@ modalCart.addEventListener('click', event => {
 });
 
 const cart = {
-	cartGoods: [],
+	cartGoods: JSON.parse(localStorage.getItem('cart')) || [],
+	updateLocalStorage() {
+		localStorage.setItem('cart', JSON.stringify(this.cartGoods));
+	},
 	cartGoodsCount() {
 		return this.cartGoods.length;
 	},
@@ -77,12 +80,14 @@ const cart = {
 										.then(data => data.find(item => item.id === id))
 										.then(({ id, name, price }) => {
 											this.cartGoods.push({ id, name, price, count: 1 });
+											this.updateLocalStorage();
 											this.quantity();										
 										});
 	},
 	deleteGood(id) {
 		this.cartGoods = this.cartGoods.filter(item => id !== item.id);
 		this.renderCart();
+		this.updateLocalStorage();
 		this.quantity();
 	},
 	minusGood(id) {
@@ -90,6 +95,7 @@ const cart = {
 			if (item.id === id) item.count > 1 ? item.count -= 1 : this.deleteGood(id);
 		}
 		this.renderCart();
+		this.updateLocalStorage();
 		this.quantity();
 	},
 	plusGood(id) {
@@ -100,14 +106,17 @@ const cart = {
 			}
 		}
 		this.renderCart();
+		this.updateLocalStorage();
 		this.quantity();
 	},
 	clearCart() {
 		this.cartGoods.length = 0;
 		this.renderCart();
+		this.updateLocalStorage();
 		this.quantity();
 	},
 }
+cartCount.textContent = cart.cartGoodsCount();
 
 document.addEventListener('click', event => {
 	const addToCart = event.target.closest('.add-to-cart');
@@ -191,9 +200,12 @@ showClothing.forEach(item => item.addEventListener('click', event => {
 }));
 
 // send data to server
-const postData = dataUser => fetch('/buy', {
+const postData = data => fetch('/buy', {
 	method: 'POST',
-	body: dataUser,
+	body: JSON.stringify(data),
+	headers: {
+		'Content-Type': 'application/json;charset=utf-8'
+	},
 });
 
 const validForm = data => {
@@ -215,8 +227,15 @@ modalForm.addEventListener('submit', event => {
 	const formData = new FormData(modalForm);
 
 	if (validForm(formData) && cart.cartGoodsCount()) {
+		const data = {};
+		for ( const [ name, value ] of formData) {
+			data[name] = value;
+		}
+		data.cart = cart.cartGoods;
+		
 		formData.append('cart', JSON.stringify(cart.cartGoods));
-		postData(formData)
+		cart.updateLocalStorage();
+		postData(data)
 		.then(response => {
 			if (!response.ok) {
 				throw new Error(response.status)
@@ -236,3 +255,5 @@ modalForm.addEventListener('submit', event => {
 		}
 	}
 })
+
+cart.quantity();
