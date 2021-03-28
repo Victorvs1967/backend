@@ -12,6 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import lombok.extern.java.Log;
+
+@Log
 @Controller
 public class IndexController {
 
@@ -24,12 +27,14 @@ public class IndexController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("user", new User());
-
-        if (goodsRepository.findAll().size() == 0) {
+        long dbSize = goodsRepository.count();
+        log.info("dbSize: " + dbSize);
+        if (dbSize == 0) {
             ArrayList<Goods> goods =  goodsService.importGoodsFromJson();
             for (Goods good : goods) {
                 goodsRepository.save(good);
             }
+            log.info("dbSize: " + dbSize);
         }
         return "index";
     }

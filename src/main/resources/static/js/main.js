@@ -23,11 +23,12 @@ const openModal = () => {
 };
 const closeModal = () => modalCart.classList.remove('show')
 
-const checkGoods = () => {
+const checkGoods = async () => {
 	const data = [];
-	return () => data.length ? data : data.push(...fetch('db/db.json').then(response => response.json()));
+	return () => await (data.length ? data : data.push(...fetch('db/db.json').then(response => response.json())));
 }
 
+// const getGoods = checkGoods; 
 const getGoods = () => fetch('db/db.json').then(response => response.json()); 
 
 buttonCart.addEventListener('click', openModal);
@@ -37,6 +38,9 @@ modalCart.addEventListener('click', event => {
 
 const cart = {
 	cartGoods: [],
+	cartGoodsCount() {
+		return this.cartGoods.length;
+	},
 	quantity() {
 		const count = this.cartGoods.reduce((sum, item) => sum + item.count, 0);
 		cartCount.textContent = count ? count : '';
@@ -192,21 +196,43 @@ const postData = dataUser => fetch('/buy', {
 	body: dataUser,
 });
 
+const validForm = data => {
+	let valid = false;
+	for (const [, value] of data) {
+		if (value.trim()) {
+			valid = true;
+		} else {
+			valid = false;
+			alert('Empty field!');
+			break;
+		}
+	}
+	return valid;
+};
+
 modalForm.addEventListener('submit', event => {
 	event.preventDefault();
 	const formData = new FormData(modalForm);
-	formData.append('goods', JSON.stringify(cart.cartGoods));
-	postData(formData)
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(response.status)
+
+	if (validForm(formData) && cart.cartGoodsCount()) {
+		formData.append('cart', JSON.stringify(cart.cartGoods));
+		postData(formData)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error(response.status)
+			}
+			alert('Your goods sent!');
+		})
+		.catch(error => alert('Error: ' + error))
+		.finally(() => {
+			closeModal();
+			modalForm.reset();
+			cart.clearCart();
+		});		
+	} else {
+		if (validForm(formData)) {
+			alert('Cart empty!');
+			closeModal();
 		}
-		alert('Your goods sent!');
-	})
-	.catch(error => alert('Error: ' + error))
-	.finally(() => {
-		closeModal();
-		modalForm.reset();
-		cart.clearCart();
-	});
+	}
 })
