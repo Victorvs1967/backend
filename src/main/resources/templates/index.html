@@ -550,7 +550,7 @@
 		<!-- /.container -->
 	</footer>
 	<!-- /.footer -->
-	<div class="overlay" id="modal-cart">
+	<div class="overlay" id="modal-cart" data-th-object="${goods}">
 		<div class="modal">
 			<header class="modal-header">
 				<h2 class="modal-title">Cart</h2>
@@ -575,38 +575,11 @@
 					</tr>
 				</thead>
 				<tbody class="cart-table__goods">
-					<tr class="cart-item" data-id="003">
-						<td>Sweater</td>
-						<td>250$</td>
-						<td><button class="cart-btn-minus">-</button></td>
-						<td>2</td>
-						<td><button class="cart-btn-plus">+</button></td>
-						<td>500$</td>
-						<td><button class="cart-btn-delete">x</button></td>
-					</tr>
-					<tr class="cart-item" data-id="003">
-						<td>Sweater</td>
-						<td>250$</td>
-						<td><button class="cart-btn-minus">-</button></td>
-						<td>2</td>
-						<td><button class="cart-btn-plus">+</button></td>
-						<td>500$</td>
-						<td><button class="cart-btn-delete">x</button></td>
-					</tr>
-					<tr class="cart-item" data-id="003">
-						<td>Sweater</td>
-						<td>250$</td>
-						<td><button class="cart-btn-minus">-</button></td>
-						<td>2</td>
-						<td><button class="cart-btn-plus">+</button></td>
-						<td>500$</td>
-						<td><button class="cart-btn-delete">x</button></td>
-					</tr>
 				</tbody>
 				<tfoot>
 					<tr>
 						<th scope="col" colspan="5">Total:</th>
-						<th scope="col" class="card-table__total" colspan="2">1500$</th>
+						<th scope="col" class="card-table__total" colspan="2"></th>
 					</tr>
 				</tfoot>
 			</table>

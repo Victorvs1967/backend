@@ -8,7 +8,7 @@ const buttonCart = document.querySelector('.button-cart'),
 	more = document.querySelector('.more'),
 	navigationLink = document.querySelectorAll('.navigation-link'),
 	longGoodsList = document.querySelector('.long-goods-list'),
-	showAcsesories = document.querySelectorAll('.show-acsessories'),
+	showAccessories = document.querySelectorAll('.show-acsessories'),
 	showClothing = document.querySelectorAll('.show-clothing'),
 	cartTableGoods = document.querySelector('.cart-table__goods'),
 	cartTableTotal = document.querySelector('.card-table__total'),
@@ -46,6 +46,8 @@ const cart = {
 		this.cartGoods.forEach(({ id, name, price, count }) => {
 			const trGood = document.createElement('tr');
 			trGood.className = 'cart-item';
+			trGood.dataset.thObject = '${goods}';
+			trGood.dataset.thId = '*{id}';
 			trGood.dataset.id = id;
 			trGood.innerHTML = `
 				<td>${name}</td>
@@ -53,7 +55,7 @@ const cart = {
 				<td><button class="cart-btn-minus">-</button></td>
 				<td>${count}</td>
 				<td><button class="cart-btn-plus">+</button></td>
-				<td>${price * count}$</td>
+				<td>$${price * count}</td>
 				<td><button class="cart-btn-delete">x</button></td>
 			`;
 			cartTableGoods.append(trGood);
@@ -63,7 +65,7 @@ const cart = {
 			return sum + item.price * item.count;
 		}, 0);
 
-		cartTableTotal.textContent = totalPrice;
+		cartTableTotal.textContent = '$' + totalPrice;
 	},
 	addCartGoods(id) {
 		const goodItem = this.cartGoods.find(item => item.id === id);
@@ -172,7 +174,7 @@ navigationLink.forEach(link => link.addEventListener('click', event => {
 		filterCards(field, value);
 }));
 
-showAcsesories.forEach(item => item.addEventListener('click', event => {
+showAccessories.forEach(item => item.addEventListener('click', event => {
 	event.preventDefault();
 	filterCards('category', 'Accessories');
 	smoothScroll();

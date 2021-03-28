@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 public class Goods {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
     
     private String name;
     private String img;

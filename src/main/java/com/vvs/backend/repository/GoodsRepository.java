@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GoodsRepository extends JpaRepository<Goods, Long> {
-    Optional<Goods> findById(Long id);
+public interface GoodsRepository extends JpaRepository<Goods, String> {
+    Optional<Goods> findById(String id);
 }

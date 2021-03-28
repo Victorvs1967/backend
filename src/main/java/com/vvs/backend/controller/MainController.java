@@ -1,31 +1,43 @@
 package com.vvs.backend.controller;
 
-import com.vvs.backend.model.User;
+import java.util.List;
 
-import org.springframework.stereotype.Controller;
+import com.vvs.backend.model.Goods;
+import com.vvs.backend.model.User;
+import com.vvs.backend.repository.GoodsRepository;
+import com.vvs.backend.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.java.Log;
-
-@Log
-@Controller
+@RestController
 @CrossOrigin(origins = "localhost:8080")
 public class MainController {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private GoodsRepository goodsRepository;
     
-    @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("user", new User());
-        return "index";
+    @PostMapping("/buy")
+    public void buyGoods(@ModelAttribute User user, Model model) {
+        model.addAttribute("user", user);
+        userRepository.save(user);
     }
 
-    @PostMapping("/buy")
-    public String buyGoods(@ModelAttribute User user, Model model) {
-        model.addAttribute("user", user);
-        log.info(user.toString());
-        return "index";
+    @GetMapping("/users")
+    public List<User> allUsers() {
+        return userRepository.findAll();
+    }
+
+    @GetMapping("/goods")
+    public List<Goods> allGoods() {
+        return goodsRepository.findAll();
     }
 }
